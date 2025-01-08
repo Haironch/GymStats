@@ -7,6 +7,10 @@ import Navbar from './components/Navbar';
 const App = () => {
   const [user, setUser] = useState(null);
 
+  const handleLogout = () => {
+    setUser(null); // Esto hará que se muestre el GoogleLogin
+  };
+
   if (!user) {
     return <GoogleLogin setUser={setUser} />;
   }
@@ -14,7 +18,7 @@ const App = () => {
   return (
     <Router>
       <div className="min-h-screen bg-[#202123]">
-        <Navbar user={user} />
+        <Navbar user={user} onLogout={handleLogout} />
         <Routes>
           <Route path="/" element={<Home user={user} />} />
           <Route path="/peso" element={<div>Calculadora de Peso (Próximamente)</div>} />

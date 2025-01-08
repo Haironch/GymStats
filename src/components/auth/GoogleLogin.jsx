@@ -17,7 +17,7 @@ const GoogleLogin = ({ setUser }) => {
     <div className="flex items-center justify-center min-h-screen bg-[#202123]">
       <div className="p-8 bg-[#2C2C2E] rounded-lg shadow-2xl max-w-md w-full border border-gray-700">
         <h1 className="mb-8 text-4xl font-bold text-center text-[#FF3B30]">
-          GymStats
+          MyGymStats
         </h1>
         <p className="mb-8 text-[#F0F0F0] text-center text-lg">
           Registra y controla tus entrenamientos diarios
