@@ -4,6 +4,8 @@ import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import GoogleLogin from './components/auth/GoogleLogin';
 import Home from './pages/Home';
 import Navbar from './components/Navbar';
+// Importar el componente CalcularPeso
+import CalcularPeso from './pages/CalcularPeso'; // Ajusta la ruta según tu estructura de carpetas
 
 const App = () => {
   const [user, setUser] = useState(null);
@@ -63,7 +65,8 @@ const App = () => {
         <Navbar user={user} onLogout={handleLogout} />
         <Routes>
           <Route path="/" element={<Home user={user} />} />
-          <Route path="/peso" element={<div>Calculadora de Peso (Próximamente)</div>} />
+          {/* Reemplazar el div placeholder con el componente CalcularPeso */}
+          <Route path="/peso" element={<CalcularPeso />} />
           <Route path="/calorias" element={<div>Requerimientos Calóricos (Próximamente)</div>} />
           <Route path="/cronometro" element={<div>Cronómetro (Próximamente)</div>} />
           <Route path="/suplementos" element={<div>Registro de Suplementos (Próximamente)</div>} />

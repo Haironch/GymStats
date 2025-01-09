@@ -12,7 +12,7 @@ const Navbar = ({ user, onLogout }) => {
   const navItemsContainerRef = useRef(null);
 
   const navItems = [
-    { path: '/peso', icon: Calculator, text: 'Calcula tu peso' },
+    { path: '/peso', icon: Calculator, text: 'Calcula tu peso correcto' },
     { path: '/calorias', icon: Activity, text: 'Requerimientos calóricos' },
     { path: '/cronometro', icon: Timer, text: 'Cronómetro' },
     { path: '/suplementos', icon: Dumbbell, text: 'Suplementos' },
