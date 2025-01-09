@@ -7,6 +7,7 @@ import {
   where,
   orderBy,
   onSnapshot,
+  Timestamp
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 
@@ -14,92 +15,114 @@ const Home = ({ user }) => {
   const [stats, setStats] = useState({
     lastWorkout: null,
     weeklyWorkouts: 0,
-    progress: 0,
+    monthlyProgress: 0,
+    uniqueDaysThisMonth: 0,
+    totalDaysInMonth: 0,
+    currentMonth: ''
   });
 
-  useEffect(() => {
-    const fetchStats = () => {
-      const auth = getAuth();
-      const db = getFirestore();
+  const fetchStats = () => {
+    const auth = getAuth();
+    const db = getFirestore();
 
-      if (!auth.currentUser) return;
+    if (!auth.currentUser) return;
 
-      const q = query(
-        collection(db, "workouts"),
-        where("userId", "==", auth.currentUser.uid),
-        orderBy("createdAt", "desc")
-      );
+    const q = query(
+      collection(db, "workouts"),
+      where("userId", "==", auth.currentUser.uid),
+      orderBy("createdAt", "desc")
+    );
 
-      const unsubscribe = onSnapshot(
-        q,
-        (querySnapshot) => {
-          const workouts = [];
-          querySnapshot.forEach((doc) => {
-            workouts.push({ id: doc.id, ...doc.data() });
-          });
+    const unsubscribe = onSnapshot(
+      q,
+      (querySnapshot) => {
+        const workouts = [];
+        querySnapshot.forEach((doc) => {
+          workouts.push({ id: doc.id, ...doc.data() });
+        });
 
-          // Calcular entrenamientos de esta semana (Lunes a Domingo)
-          const today = new Date();
-          const currentDay = today.getDay();
-          const monday = new Date(today);
-          monday.setDate(
-            today.getDate() - (currentDay === 0 ? 6 : currentDay - 1)
-          );
-          monday.setHours(0, 0, 0, 0);
+        // Obtener fecha actual
+        const today = new Date();
+        
+        // Calcular entrenamientos de esta semana (Lunes a Domingo)
+        const currentDay = today.getDay();
+        const monday = new Date(today);
+        monday.setDate(
+          today.getDate() - (currentDay === 0 ? 6 : currentDay - 1)
+        );
+        monday.setHours(0, 0, 0, 0);
+        
+        const weeklyWorkouts = workouts.filter((workout) => {
+          const workoutDate = workout.createdAt instanceof Timestamp 
+            ? workout.createdAt.toDate() 
+            : new Date(workout.createdAt);
+          return workoutDate >= monday;
+        }).length;
 
-          const weeklyWorkouts = workouts.filter((workout) => {
-            const workoutDate = workout.createdAt.toDate();
-            return workoutDate >= monday;
-          }).length;
+        // Cálculo para el progreso mensual por días únicos
+        const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+        const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+        const totalDaysInMonth = endOfMonth.getDate();
 
-          // Calcular progreso anual
-          const startOfYear = new Date(today.getFullYear(), 0, 1);
-          const totalWorkoutsThisYear = workouts.filter(
-            (workout) => workout.createdAt.toDate() >= startOfYear
-          ).length;
+        // Filtrar entrenamientos del mes actual y obtener días únicos
+        const uniqueDays = new Set();
+        workouts.forEach((workout) => {
+          const workoutDate = workout.createdAt instanceof Timestamp 
+            ? workout.createdAt.toDate() 
+            : new Date(workout.createdAt);
+          if (workoutDate >= startOfMonth && workoutDate <= endOfMonth) {
+            uniqueDays.add(workoutDate.toDateString());
+          }
+        });
 
-          const weeksInYear = 52;
-          const targetWorkoutsPerYear = weeksInYear * 3;
-          const progress = Math.min(
-            (totalWorkoutsThisYear / targetWorkoutsPerYear) * 100,
-            100
-          );
+        const uniqueDaysCount = uniqueDays.size;
+        const monthlyProgress = Math.min((uniqueDaysCount / totalDaysInMonth) * 100, 100);
 
-          // Formatear la fecha del último entrenamiento
-          const formatLastWorkoutDate = (workout) => {
-            if (!workout) return null;
-            const date = workout.createdAt.toDate();
-            const options = {
-              weekday: "long",
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-              hour: "2-digit",
-              minute: "2-digit",
-            };
-            return date.toLocaleDateString("es-ES", options);
+        // Formatear la fecha del último entrenamiento
+        const formatLastWorkoutDate = (workout) => {
+          if (!workout) return null;
+          
+          const date = workout.createdAt instanceof Timestamp 
+            ? workout.createdAt.toDate() 
+            : new Date(workout.createdAt);
+            
+          const options = {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
           };
+          return date.toLocaleDateString("es-ES", options);
+        };
 
-          setStats({
-            lastWorkout: workouts[0]
-              ? {
-                  ...workouts[0],
-                  formattedDate: formatLastWorkoutDate(workouts[0]),
-                }
-              : null,
-            weeklyWorkouts,
-            progress: progress.toFixed(0),
-          });
-        },
-        (error) => {
-          console.error("Error al obtener estadísticas:", error);
-        }
-      );
+        // Obtener nombre del mes actual
+        const monthName = new Intl.DateTimeFormat('es-ES', { month: 'long' }).format(today);
 
-      // Limpiar suscripción al desmontar
-      return () => unsubscribe();
-    };
+        setStats({
+          lastWorkout: workouts[0]
+            ? {
+                ...workouts[0],
+                formattedDate: formatLastWorkoutDate(workouts[0]),
+              }
+            : null,
+          weeklyWorkouts,
+          monthlyProgress: monthlyProgress.toFixed(0),
+          uniqueDaysThisMonth: uniqueDaysCount,
+          totalDaysInMonth: totalDaysInMonth,
+          currentMonth: monthName
+        });
+      },
+      (error) => {
+        console.error("Error al obtener estadísticas:", error);
+      }
+    );
 
+    return () => unsubscribe();
+  };
+
+  useEffect(() => {
     fetchStats();
   }, [user]);
 
@@ -160,24 +183,24 @@ const Home = ({ user }) => {
 
           <div className="bg-[#2C2C2E] p-6 rounded-lg shadow-lg border border-gray-700">
             <h3 className="text-[#FF3B30] font-bold text-xl mb-2">
-              Progreso Anual
+              Progreso de {stats.currentMonth}
             </h3>
             <p className="text-[#F0F0F0]">
-              {stats.progress}% del objetivo anual
+              {stats.monthlyProgress}% del mes ({stats.uniqueDaysThisMonth} días de {stats.totalDaysInMonth})
             </p>
             <div className="w-full bg-gray-700 rounded-full h-2.5 mt-2">
               <div
                 className="bg-[#FF3B30] h-2.5 rounded-full"
-                style={{ width: `${stats.progress}%` }}
+                style={{ width: `${stats.monthlyProgress}%` }}
               ></div>
             </div>
             <p className="text-sm text-gray-400 mt-2">
-              Meta: 156 entrenamientos al año
+              Meta: Entrenar todos los días del mes
             </p>
           </div>
         </div>
 
-        <WorkoutForm />
+        <WorkoutForm onWorkoutAdded={fetchStats} />
       </div>
     </div>
   );

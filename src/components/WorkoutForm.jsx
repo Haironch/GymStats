@@ -10,7 +10,8 @@ import {
   orderBy,
   onSnapshot,
   deleteDoc,
-  doc
+  doc,
+  Timestamp
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { Trash2 } from 'lucide-react';
@@ -45,6 +46,11 @@ const WorkoutForm = ({ onWorkoutAdded }) => {
   const auth = getAuth();
   const db = getFirestore();
 
+  // Configurar límites del calendario para el año actual
+  const currentYear = new Date().getFullYear();
+  const minDate = new Date(currentYear, 0, 1); // 1 de enero del año actual
+  const maxDate = new Date(currentYear, 11, 31); // 31 de diciembre del año actual
+
   useEffect(() => {
     if (!auth.currentUser) return;
 
@@ -76,15 +82,17 @@ const WorkoutForm = ({ onWorkoutAdded }) => {
   }, [auth.currentUser]);
 
   const formatDate = (date) => {
+    if (!date) return null;
+    
+    // Si es un Timestamp de Firestore, convertirlo a Date
+    const dateObj = date instanceof Timestamp ? date.toDate() : new Date(date);
     const options = {
       weekday: "long",
       year: "numeric",
       month: "long",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
+      day: "numeric"
     };
-    return date.toDate().toLocaleDateString("es-ES", options);
+    return dateObj.toLocaleDateString("es-ES", options);
   };
 
   const handleDelete = async (workoutId) => {
@@ -116,12 +124,19 @@ const WorkoutForm = ({ onWorkoutAdded }) => {
         throw new Error("Indica si realizaste cardio");
       }
 
+      // Validar que la fecha esté dentro del año actual
+      const selectedYear = date.getFullYear();
+      if (selectedYear !== currentYear) {
+        throw new Error("Solo puedes registrar entrenamientos del año actual");
+      }
+
       const workoutData = {
         userId: auth.currentUser.uid,
         muscles: selectedMuscles,
         didCardio: didCardio,
         duration: Number(duration),
-        createdAt: new Date(),
+        createdAt: Timestamp.fromDate(date),
+        registeredAt: Timestamp.fromDate(new Date())
       };
 
       const docRef = await addDoc(collection(db, "workouts"), workoutData);
@@ -152,14 +167,22 @@ const WorkoutForm = ({ onWorkoutAdded }) => {
         )}
 
         <h2 className="text-[#FF3B30] text-2xl font-bold mb-6 text-center">
-        Registrar Entrenamiento
-      </h2>
+          Registrar Entrenamiento
+        </h2>
 
-        <Calendar
-          onChange={setDate}
-          value={date}
-          className="mb-6 bg-[#F0F0F0] rounded-lg p-2 mx-auto"
-        />
+        <div className="mb-6">
+          <h3 className="text-[#FF3B30] font-bold mb-3">Fecha del Entrenamiento</h3>
+          <Calendar
+            onChange={setDate}
+            value={date}
+            minDate={minDate}
+            maxDate={maxDate}
+            className="mb-6 bg-[#F0F0F0] rounded-lg p-2 mx-auto"
+          />
+          <p className="text-[#F0F0F0] text-sm text-center mt-2">
+            Solo puedes registrar entrenamientos del año {currentYear}
+          </p>
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
           {/* Músculos Superiores */}

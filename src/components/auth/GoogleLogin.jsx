@@ -1,12 +1,18 @@
 import React from "react";
-import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { GoogleAuthProvider, signInWithPopup, setPersistence, browserLocalPersistence } from "firebase/auth";
 import { auth } from "../../firebase/config";
 
 const GoogleLogin = ({ setUser }) => {
   const handleGoogleLogin = async () => {
-    const provider = new GoogleAuthProvider();
     try {
+      // Establecer persistencia
+      await setPersistence(auth, browserLocalPersistence);
+      
+      const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
+      
+      // Guardar el usuario en localStorage y estado
+      localStorage.setItem('user', JSON.stringify(result.user));
       setUser(result.user);
     } catch (error) {
       console.error("Error de autenticación:", error);
