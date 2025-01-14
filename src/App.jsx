@@ -6,6 +6,7 @@ import Home from './pages/Home';
 import Navbar from './components/Navbar';
 // Importar el componente CalcularPeso
 import CalcularPeso from './pages/CalcularPeso'; // Ajusta la ruta según tu estructura de carpetas
+import TimerAndSet from './pages/TimerandSet';
 
 const App = () => {
   const [user, setUser] = useState(null);
@@ -68,7 +69,7 @@ const App = () => {
           {/* Reemplazar el div placeholder con el componente CalcularPeso */}
           <Route path="/peso" element={<CalcularPeso />} />
           <Route path="/calorias" element={<div>Requerimientos Calóricos (Próximamente)</div>} />
-          <Route path="/cronometro" element={<div>Cronómetro (Próximamente)</div>} />
+          <Route path="/cronometro" element={<TimerAndSet/>} />
           <Route path="/suplementos" element={<div>Registro de Suplementos (Próximamente)</div>} />
           <Route path="/medicamentos" element={<div>Registro de Medicamentos (Próximamente)</div>} />
         </Routes>
