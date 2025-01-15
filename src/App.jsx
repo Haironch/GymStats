@@ -66,12 +66,12 @@ const App = () => {
         <Navbar user={user} onLogout={handleLogout} />
         <Routes>
           <Route path="/" element={<Home user={user} />} />
-          {/* Reemplazar el div placeholder con el componente CalcularPeso */}
           <Route path="/peso" element={<CalcularPeso />} />
           <Route path="/calorias" element={<div>Requerimientos Calóricos (Próximamente)</div>} />
           <Route path="/cronometro" element={<TimerAndSet/>} />
           <Route path="/suplementos" element={<div>Registro de Suplementos (Próximamente)</div>} />
           <Route path="/medicamentos" element={<div>Registro de Medicamentos (Próximamente)</div>} />
+          <Route path="/playlist" element={<div>Registro de Ejercicios (Próximamente)</div>} />
         </Routes>
       </div>
     </Router>
