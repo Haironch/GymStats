@@ -7,7 +7,8 @@ import Navbar from './components/Navbar';
 // Importar el componente CalcularPeso
 import CalcularPeso from './pages/CalcularPeso'; // Ajusta la ruta según tu estructura de carpetas
 import TimerAndSet from './pages/TimerandSet';
-
+import PlayList from './pages/PlayList';  
+import Drugs from './pages/Drugs';
 const App = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -70,8 +71,8 @@ const App = () => {
           <Route path="/calorias" element={<div>Requerimientos Calóricos (Próximamente)</div>} />
           <Route path="/cronometro" element={<TimerAndSet/>} />
           <Route path="/suplementos" element={<div>Registro de Suplementos (Próximamente)</div>} />
-          <Route path="/medicamentos" element={<div>Registro de Medicamentos (Próximamente)</div>} />
-          <Route path="/playlist" element={<div>Registro de Ejercicios (Próximamente)</div>} />
+          <Route path="/medicamentos" element={<Drugs/>} />
+          <Route path="/playlist" element={<PlayList/>} />
         </Routes>
       </div>
     </Router>
