@@ -5,6 +5,7 @@ import GoogleLogin from "./components/auth/GoogleLogin";
 import Home from "./pages/Home";
 import Navbar from "./components/Navbar";
 import CalorieCalculator from "./pages/CalorieCalculator";
+import Suplementos from "./pages/Suplementos";
 
 // Importar el componente CalcularPeso
 import CalcularPeso from "./pages/CalcularPeso"; // Ajusta la ruta según tu estructura de carpetas
@@ -72,10 +73,7 @@ const App = () => {
           <Route path="/peso" element={<CalcularPeso />} />
           <Route path="/calorias" element={<CalorieCalculator />} />
           <Route path="/cronometro" element={<TimerAndSet />} />
-          <Route
-            path="/suplementos"
-            element={<div>Registro de Suplementos (Próximamente)</div>}
-          />
+          <Route path="/suplementos" element={<Suplementos />} />
           <Route path="/medicamentos" element={<Drugs />} />
           <Route path="/playlist" element={<PlayList />} />
         </Routes>
