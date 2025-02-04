@@ -74,14 +74,16 @@ const Navbar = ({ user, onLogout }) => {
               </button>
             )}
             <div className="flex items-center">
-              <span className="text-[#FFFFFF] font-bold text-lg hover:text-[#FF3B30] transition-colors">
-                MyGymStats
-              </span>
-              <img
-                src="/src/assets/banderagt.png"
-                alt="Logo"
-                className="h-8 w-8 ml-2"
-              />
+              <Link to="/" className="flex items-center">
+                <span className="text-[#FFFFFF] font-bold text-lg hover:text-[#FF3B30] transition-colors">
+                  MyGymStats
+                </span>
+                <img
+                  src="/src/assets/banderagt.png"
+                  alt="Logo"
+                  className="h-8 w-8 ml-2"
+                />
+              </Link>
             </div>
           </div>
 
