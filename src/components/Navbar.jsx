@@ -79,7 +79,7 @@ const Navbar = ({ user, onLogout }) => {
                   MyGymStats
                 </span>
                 <img
-                  src="/src/assets/banderagt.png"
+                  src="../assets/banderagt.png"
                   alt="Logo"
                   className="h-8 w-8 ml-2"
                 />
