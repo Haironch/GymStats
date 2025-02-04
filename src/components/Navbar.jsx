@@ -11,6 +11,7 @@ import {
   Music,
 } from "lucide-react";
 import { getAuth, signOut } from "firebase/auth";
+import logo from "../assets/banderagt.png";
 
 const Navbar = ({ user, onLogout }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -78,11 +79,7 @@ const Navbar = ({ user, onLogout }) => {
                 <span className="text-[#FFFFFF] font-bold text-lg hover:text-[#FF3B30] transition-colors">
                   MyGymStats
                 </span>
-                <img
-                  src="../assets/banderagt.png"
-                  alt="Logo"
-                  className="h-8 w-8 ml-2"
-                />
+                <img src={logo} alt="Logo" className="h-8 w-8 ml-2" />
               </Link>
             </div>
           </div>
